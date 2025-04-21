@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF">
+
+    <!-- Верхня зона: велика прозора кнопка -->
+    <FrameLayout
+        android:id="@+id/topTouchArea"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="8">
+
+        <mda.sport.tempomator.CircleMatrixView
+            android:id="@+id/circleMatrixView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Прозора кнопка над колами -->
+        <Button
+            android:id="@+id/startStopButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:focusable="false" />
+    </FrameLayout>
+
+    <!-- Середня зона: 4 маленькі горизонтальні кола -->
+    <LinearLayout
+        android:id="@+id/beatLine"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <View
+            android:id="@+id/beatOver1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/circle_gray" />
+
+        <View
+            android:id="@+id/beatOver2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/circle_gray" />
+
+        <View
+            android:id="@+id/beatOver3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/circle_gray" />
+
+        <View
+            android:id="@+id/beatOver4"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/circle_gray" />
+    </LinearLayout>
+
+    <!-- Нижня зона: BPM + повзунок -->
+    <LinearLayout
+        android:id="@+id/bpmControl"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/bpmRate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="12dp"
+            android:text="BPM: 120"
+            android:textSize="18sp" />
+
+        <SeekBar
+            android:id="@+id/bpmSeekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="300"
+            android:progress="120" />
+    </LinearLayout>
+</LinearLayout>
