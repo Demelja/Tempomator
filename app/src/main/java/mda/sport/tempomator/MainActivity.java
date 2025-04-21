@@ -1,6 +1,7 @@
 package mda.sport.tempomator;
 
 // MainActivity.java
+import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.Bundle;
@@ -8,7 +9,10 @@ import android.os.Handler;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.Toast;
 import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,6 +38,11 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             if (!isRunning) return;
 
+            runOnUiThread(() -> {
+                bpmText.setBackgroundColor(Color.RED);
+                bpmText.postDelayed(() ->
+                        bpmText.setBackgroundColor(Color.TRANSPARENT), 100);
+            });
             updateBeatOverCircles(beatOverIndex);
 
             circleMatrixView.setActiveCircle(beatIndex);
@@ -44,7 +53,31 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 playSound(sound1);
             }
+            /*
+            🔊 Відтворення звуку — в окремому потоці
+🧠 UI залишається чутливим, метроном не зависає
+📦 Кожен MediaPlayer звільняє ресурси після завершення
 
+            new Thread(() -> {
+        try {
+            MediaPlayer player = null;
+            if (a == 3 && b == 3) {
+                player = MediaPlayer.create(this, R.raw.click3);
+            } else if (b == 3) {
+                player = MediaPlayer.create(this, R.raw.click2);
+            } else {
+                player = MediaPlayer.create(this, R.raw.click1);
+            }
+
+            if (player != null) {
+                player.setOnCompletionListener(MediaPlayer::release);
+                player.start();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }).start();
+            */
             //beatIndex = (beatIndex + 1) % 4;
             beatIndex++;
             if (beatIndex > 3) {
@@ -85,6 +118,11 @@ public class MainActivity extends AppCompatActivity {
         sound2 = soundPool.load(this, R.raw.click_forth, 1);
         sound3 = soundPool.load(this, R.raw.click_last_cycle, 1);
 
+        /*
+        click1 = MediaPlayer.create(this, R.raw.click1);
+        click2 = MediaPlayer.create(this, R.raw.click2);
+        click3 = MediaPlayer.create(this, R.raw.click3);
+        */
         bpmSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 bpm = Math.max(30, progress);
@@ -115,6 +153,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void playSound(int soundId) {
         soundPool.play(soundId, 1, 1, 1, 0, 1);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_settings) {
+            Toast.makeText(this, "Налаштування", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (item.getItemId() == R.id.menu_about) {
+            Toast.makeText(this, "Про програму", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
