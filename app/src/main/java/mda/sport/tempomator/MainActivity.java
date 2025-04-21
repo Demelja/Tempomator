@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
                 bpmText.postDelayed(() ->
                         bpmText.setBackgroundColor(Color.TRANSPARENT), 100);
             });
+
             updateBeatOverCircles(beatOverIndex);
 
             circleMatrixView.setActiveCircle(beatIndex);
