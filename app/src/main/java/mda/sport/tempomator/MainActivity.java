@@ -1,6 +1,8 @@
 package mda.sport.tempomator;
 
 // MainActivity.java
+
+import android.app.AlertDialog;
 import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
@@ -9,7 +11,6 @@ import android.os.Handler;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Button;
-import android.widget.Toast;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
             updateBeatOverCircles(beatOverIndex);
 
-            circleMatrixView.setActiveCircle(beatIndex);
+            circleMatrixView.nextBeat(beatIndex);
             if (beatIndex == 3 && beatOverIndex == 3) {
                 playSound(sound3);
             } else if (beatIndex == 3) {
@@ -164,14 +165,45 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_settings) {
-            Toast.makeText(this, "Налаштування", Toast.LENGTH_SHORT).show();
-            return true;
-        } else if (item.getItemId() == R.id.menu_about) {
-            Toast.makeText(this, "Про програму", Toast.LENGTH_SHORT).show();
+        if (item.getItemId() == R.id.menu_about) {
+            new AlertDialog.Builder(this)
+                    .setTitle("About Program")
+                    .setMessage("Metronome App\nCreated with ❤️ using Java and Android Studio.")
+                    .setPositiveButton("OK", null)
+                    .show();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("bpm", bpm);
+        outState.putInt("beatIndex", beatIndex);
+        outState.putInt("beatOverIndex", beatOverIndex);
+        outState.putBoolean("isRunning", isRunning);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        bpm = savedInstanceState.getInt("bpm", 120);
+        beatIndex = savedInstanceState.getInt("beatIndex", 0);
+        beatOverIndex = savedInstanceState.getInt("beatOverIndex", 0);
+        isRunning = savedInstanceState.getBoolean("isRunning", false);
+
+        bpmSeekBar.setProgress(bpm);
+        bpmText.setText("BPM: " + bpm);
+
+        circleMatrixView.setRunning(isRunning);
+        circleMatrixView.nextBeat(beatIndex);
+        updateBeatOverCircles(beatOverIndex);
+
+        if (isRunning) {
+            handler.postDelayed(beatRunnable, 0);
+        }
     }
 
     @Override

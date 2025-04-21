@@ -1,96 +1,137 @@
 package mda.sport.tempomator;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
+
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.MediaPlayer;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
+import android.content.res.Configuration;
 
 public class CircleMatrixView extends View {
 
-    private Paint paint;
-    private final int[] colors = {GRAY, GRAY, GRAY, GRAY};
-    private final float[] scaleFactors = {1f, 1f, 1f, 1f};
+    private static final int CIRCLE_COUNT = 4;
 
-    private final int RED = 0xFFFF4444;
-    private static final int GRAY = 0xFFCCCCCC;
+    private final Paint[] fillPaints = new Paint[CIRCLE_COUNT];
+    private final int[] baseColors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW};
+    private final int[] flashColors = {0xFFFFAAAA, 0xFFAAFFAA, 0xFFAAAAFF, 0xFFFFFFAA};
+    private final boolean[] shouldFill = new boolean[CIRCLE_COUNT];
+    private final boolean[] isFlashing = new boolean[CIRCLE_COUNT];
 
-    private float[][] centers = new float[4][2];
-    private float baseRadius = 0;
+    private float[] baseRadii = new float[CIRCLE_COUNT];
+    private int centerX, centerY;
+
+    private boolean isRunning = false;
+
+    private final Handler handler = new Handler();
+    private MediaPlayer sound1, sound2;
 
     public CircleMatrixView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        init(context);
     }
 
-    public void setActiveCircle(int index) {
-        for (int i = 0; i < 4; i++) {
-            final int circleIndex = i;
-
-            // Анімація кольору
-            int startColor = colors[i];
-            int endColor = (i == index) ? RED : GRAY;
-
-            ValueAnimator colorAnim = ValueAnimator.ofObject(new ArgbEvaluator(), startColor, endColor);
-            colorAnim.setDuration(150);
-            colorAnim.addUpdateListener(animation -> {
-                colors[circleIndex] = (int) animation.getAnimatedValue();
-                invalidate();
-            });
-            colorAnim.start();
-
-            // Анімація розміру
-            if (i == index) {
-                ValueAnimator scaleUp = ValueAnimator.ofFloat(1f, 1.2f);
-                scaleUp.setDuration(75);
-                scaleUp.addUpdateListener(anim -> {
-                    scaleFactors[circleIndex] = (float) anim.getAnimatedValue();
-                    invalidate();
-                });
-
-                ValueAnimator scaleDown = ValueAnimator.ofFloat(1.2f, 1f);
-                scaleDown.setDuration(75);
-                scaleDown.addUpdateListener(anim -> {
-                    scaleFactors[circleIndex] = (float) anim.getAnimatedValue();
-                    invalidate();
-                });
-
-                scaleUp.setStartDelay(0);
-                scaleUp.start();
-                scaleDown.setStartDelay(75);
-                scaleDown.start();
-            } else {
-                scaleFactors[i] = 1f;
-            }
+    private void init(Context context) {
+        for (int i = 0; i < CIRCLE_COUNT; i++) {
+            fillPaints[i] = new Paint();
+            fillPaints[i].setStyle(Paint.Style.FILL);
+            fillPaints[i].setColor(Color.TRANSPARENT);
+            fillPaints[i].setAntiAlias(true);
         }
+
+        sound1 = MediaPlayer.create(context, R.raw.click_routine);
+        sound2 = MediaPlayer.create(context, R.raw.click_last_cycle);
+    }
+
+    public void setRunning(boolean running) {
+        this.isRunning = running;
+        invalidate();
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        float spacing = 0.05f * w;
-        float diameter = (w - spacing * 2) / 2;
-        baseRadius = diameter / 2;
-        float cx = w / 2f;
-        float cy = h / 2f;
+        centerX = w / 2;
+        centerY = h / 2;
+        float maxRadius = Math.min(w, h) / 2f * 0.9f;
 
-        centers[0][0] = cx;                        centers[0][1] = cy - diameter - spacing; // top
-        centers[1][0] = cx - diameter / 2 - spacing; centers[1][1] = cy;                    // left
-        centers[2][0] = cx + diameter / 2 + spacing; centers[2][1] = cy;                    // right
-        centers[3][0] = cx;                        centers[3][1] = cy + diameter + spacing; // bottom
+        for (int i = 0; i < CIRCLE_COUNT; i++) {
+            baseRadii[i] = maxRadius * (i + 1) / CIRCLE_COUNT;
+        }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        for (int i = 0; i < 4; i++) {
-            paint.setColor(colors[i]);
-            float scale = scaleFactors[i];
-            float radius = baseRadius * scale;
-            canvas.drawCircle(centers[i][0], centers[i][1], radius, paint);
+        // Малюємо від зовнішнього до внутрішнього
+        for (int i = CIRCLE_COUNT - 1; i >= 0; i--) {
+            if (shouldFill[i]) {
+                float radius = baseRadii[i];
+                if (isFlashing[i]) {
+                    fillPaints[i].setColor(flashColors[i]);
+                    radius *= 1.1f;
+                } else {
+                    fillPaints[i].setColor(baseColors[i]);
+                }
+                canvas.drawCircle(centerX, centerY, radius, fillPaints[i]);
+            }
+        }
+
+        // Малюємо контури всіх кіл
+        Paint strokePaint = new Paint();
+        strokePaint.setStyle(Paint.Style.STROKE);
+        strokePaint.setStrokeWidth(5);
+        strokePaint.setColor(Color.BLACK);
+        strokePaint.setAntiAlias(true);
+
+        for (int i = 0; i < CIRCLE_COUNT; i++) {
+            canvas.drawCircle(centerX, centerY, baseRadii[i], strokePaint);
         }
     }
-}
 
+    public void nextBeat(int beatIndex) {
+        if (beatIndex < 0 || beatIndex >= CIRCLE_COUNT) return;
+
+        // Очищаємо всі заповнення на новому циклі
+        if (beatIndex == 0) {
+            for (int i = 0; i < CIRCLE_COUNT; i++) {
+                shouldFill[i] = false;
+                isFlashing[i] = false;
+            }
+        }
+
+        // Заповнюємо кола від 0 до поточного beatIndex включно
+        for (int i = 0; i <= beatIndex; i++) {
+            shouldFill[i] = true;
+        }
+
+        isFlashing[beatIndex] = true;
+        playSound(beatIndex);
+        invalidate();
+
+        handler.postDelayed(() -> {
+            isFlashing[beatIndex] = false;
+            invalidate();
+        }, 100);
+    }
+
+    private void playSound(int index) {
+        if (index < CIRCLE_COUNT - 1) {
+            if (sound1 != null) sound1.start();
+        } else {
+            if (sound2 != null) sound2.start();
+        }
+    }
+
+    public void reset() {
+        for (int i = 0; i < CIRCLE_COUNT; i++) {
+            shouldFill[i] = false;
+            isFlashing[i] = false;
+            fillPaints[i].setColor(Color.TRANSPARENT);
+        }
+        invalidate();
+    }
+}

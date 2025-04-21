@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Fitness++Tempomator</string>
+    <string name="app_name">Fitness Tempomator</string>
+    <string name="button_start_stop">Tap here to start/stop</string>
 </resources>
