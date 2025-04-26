@@ -16,7 +16,13 @@ public class CircleMatrixView extends View {
     private static final int CIRCLE_COUNT = 4;
 
     private final Paint[] fillPaints = new Paint[CIRCLE_COUNT];
-    private final int[] baseColors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW};
+    //private final int[] baseColors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW};
+    private final int[] baseColors = {
+            Color.parseColor("#FF1E00"),
+            Color.parseColor("#FF7F00"),
+            Color.parseColor("#D50065"),
+            Color.parseColor("#00BF32")
+    };
     private final int[] flashColors = {0xFFFFAAAA, 0xFFAAFFAA, 0xFFAAAAFF, 0xFFFFFFAA};
     private final boolean[] shouldFill = new boolean[CIRCLE_COUNT];
     private final boolean[] isFlashing = new boolean[CIRCLE_COUNT];
@@ -84,7 +90,7 @@ public class CircleMatrixView extends View {
         Paint strokePaint = new Paint();
         strokePaint.setStyle(Paint.Style.STROKE);
         strokePaint.setStrokeWidth(5);
-        strokePaint.setColor(Color.BLACK);
+        strokePaint.setColor(Color.parseColor("#D3D3D3"));
         strokePaint.setAntiAlias(true);
 
         for (int i = 0; i < CIRCLE_COUNT; i++) {

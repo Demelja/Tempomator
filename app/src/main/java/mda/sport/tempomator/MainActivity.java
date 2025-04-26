@@ -47,40 +47,23 @@ public class MainActivity extends AppCompatActivity {
 
             updateBeatOverCircles(beatOverIndex);
 
-            circleMatrixView.nextBeat(beatIndex);
-            if (beatIndex == 3 && beatOverIndex == 3) {
-                playSound(sound3);
-            } else if (beatIndex == 3) {
-                playSound(sound2);
-            } else {
-                playSound(sound1);
-            }
-            /*
-            🔊 Відтворення звуку — в окремому потоці
-🧠 UI залишається чутливим, метроном не зависає
-📦 Кожен MediaPlayer звільняє ресурси після завершення
-
+            // 🔊 Відтворення звуку — в окремому потоці
+            // 🧠 UI залишається чутливим, метроном не зависає
             new Thread(() -> {
-        try {
-            MediaPlayer player = null;
-            if (a == 3 && b == 3) {
-                player = MediaPlayer.create(this, R.raw.click3);
-            } else if (b == 3) {
-                player = MediaPlayer.create(this, R.raw.click2);
-            } else {
-                player = MediaPlayer.create(this, R.raw.click1);
-            }
+                try {
+                    circleMatrixView.nextBeat(beatIndex);
+                    if (beatIndex == 3 && beatOverIndex == 3) {
+                        playSound(sound3);
+                    } else if (beatIndex == 3) {
+                        playSound(sound2);
+                    } else {
+                        playSound(sound1);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
 
-            if (player != null) {
-                player.setOnCompletionListener(MediaPlayer::release);
-                player.start();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }).start();
-            */
-            //beatIndex = (beatIndex + 1) % 4;
             beatIndex++;
             if (beatIndex > 3) {
                 beatIndex = 0;
@@ -120,11 +103,6 @@ public class MainActivity extends AppCompatActivity {
         sound2 = soundPool.load(this, R.raw.click_forth, 1);
         sound3 = soundPool.load(this, R.raw.click_last_cycle, 1);
 
-        /*
-        click1 = MediaPlayer.create(this, R.raw.click1);
-        click2 = MediaPlayer.create(this, R.raw.click2);
-        click3 = MediaPlayer.create(this, R.raw.click3);
-        */
         bpmSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 bpm = Math.max(30, progress);
@@ -167,8 +145,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_about) {
             new AlertDialog.Builder(this)
-                    .setTitle("About Program")
-                    .setMessage("Metronome App\nCreated with ❤️ using Java and Android Studio.")
+                    .setTitle(R.string.about_program)
+                    .setMessage(R.string.about_text)
                     .setPositiveButton("OK", null)
                     .show();
             return true;
@@ -213,111 +191,3 @@ public class MainActivity extends AppCompatActivity {
         soundPool.release();
     }
 }
-
-
-/*
-public class MainActivity extends AppCompatActivity {
-
-    private CircleMatrixView circleMatrixView;
-    private View[] beatViews = new View[4];
-    private View[] beatOverViews = new View[4];
-    private TextView bpmText;
-    private SeekBar bpmSeekBar;
-    private boolean isRunning = false;
-    private int bpm = 60;
-    private int beatIndex = 0;
-    private int beatOverIndex = 0;
-    private Handler handler = new Handler();
-
-    private Runnable beatRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (!isRunning) return;
-
-            updateBeatOverCircles(beatOverIndex);
-            //updateBeatCircles(beatIndex);
-            circleMatrixView.setActiveCircle(beatIndex);
-            playSound(beatOverIndex, beatIndex);
-
-            beatIndex++;
-            if (beatIndex > 3) {
-                beatIndex = 0;
-                beatOverIndex++;
-                if (beatOverIndex > 3) beatOverIndex = 0;
-            }
-
-            long delay = 60000 / bpm;
-            handler.postDelayed(this, delay);
-        }
-    };
-
-    private void updateBeatOverCircles(int index) {
-        for (int i = 0; i < 4; i++) {
-            beatOverViews[i].setBackgroundResource(i == index ? R.drawable.circle_green : R.drawable.circle_gray);
-        }
-    }
-
-    private void updateBeatCircles(int index) {
-        for (int i = 0; i < 4; i++) {
-            beatViews[i].setBackgroundResource(i == index ? R.drawable.circle_green : R.drawable.circle_gray);
-        }
-    }
-
-    private void playSound(int measure, int beat) {
-        new Thread(() -> {
-            MediaPlayer player;
-            if (measure == 3 && beat == 3) {
-                player = MediaPlayer.create(this, R.raw.click3);
-            } else if (beat == 3) {
-                player = MediaPlayer.create(this, R.raw.click2);
-            } else {
-                player = MediaPlayer.create(this, R.raw.click1);
-            }
-            if (player != null) {
-                player.setOnCompletionListener(MediaPlayer::release);
-                player.start();
-            }
-        }).start();
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        circleMatrixView = findViewById(R.id.circleMatrixView);
-
-        bpmText = findViewById(R.id.bpmText);
-        bpmSeekBar = findViewById(R.id.bpmSeekBar);
-        //beatOverViews[0] = findViewById(R.id.beatOver1);
-        //beatOverViews[1] = findViewById(R.id.beatOver2);
-        //beatOverViews[2] = findViewById(R.id.beatOver3);
-        //beatOverViews[3] = findViewById(R.id.beatOver4);
-        beatViews[0] = findViewById(R.id.beat1);
-        beatViews[1] = findViewById(R.id.beat2);
-        beatViews[2] = findViewById(R.id.beat3);
-        beatViews[3] = findViewById(R.id.beat4);
-
-        bpmSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                bpm = Math.max(progress, 30);
-                bpmText.setText("BPM: " + bpm);
-            }
-            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
-
-        findViewById(R.id.touchArea).setOnClickListener(v -> {
-            isRunning = !isRunning;
-            if (isRunning) {
-                beatIndex = 0;
-                beatOverIndex = 0;
-                handler.post(beatRunnable);
-            } else {
-                handler.removeCallbacks(beatRunnable);
-                updateBeatCircles(-1);
-            }
-        });
-    }
-}
-*/
