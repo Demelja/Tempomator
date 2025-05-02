@@ -19,17 +19,18 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
 
     private CircleMatrixView circleMatrixView;
+    private CircleBeatView circleBeatView;
     private TextView bpmText;
     private SeekBar bpmSeekBar;
     private Button startStopButton;
     private View[] beatOverViews = new View[4];
-
 
     private Handler handler = new Handler();
     private int bpm = 120;
     private int beatIndex = 0;
     private int beatOverIndex = 0;
     private boolean isRunning = false;
+    private boolean isOrderSwitched = false;
 
     private SoundPool soundPool;
     private int sound1, sound2, sound3;
@@ -45,13 +46,16 @@ public class MainActivity extends AppCompatActivity {
                         bpmText.setBackgroundColor(Color.TRANSPARENT), 100);
             });
 
-            updateBeatOverCircles(beatOverIndex);
+            if (isOrderSwitched) {
+                circleMatrixView.nextBeat(beatIndex);
+                updateBeatOverCircles(beatOverIndex);
+            } else {
+                circleMatrixView.nextBeat(beatOverIndex);
+                updateBeatOverCircles(beatIndex);
+            }
 
-            // 🔊 Відтворення звуку — в окремому потоці
-            // 🧠 UI залишається чутливим, метроном не зависає
             new Thread(() -> {
                 try {
-                    circleMatrixView.nextBeat(beatIndex);
                     if (beatIndex == 3 && beatOverIndex == 3) {
                         playSound(sound3);
                     } else if (beatIndex == 3) {
@@ -82,14 +86,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         circleMatrixView = findViewById(R.id.circleMatrixView);
+        circleBeatView = findViewById(R.id.circleBeatView);
         bpmText = findViewById(R.id.bpmRate);
         bpmSeekBar = findViewById(R.id.bpmSeekBar);
         startStopButton = findViewById(R.id.startStopButton);
 
-        beatOverViews[0] = findViewById(R.id.beatOver1);
-        beatOverViews[1] = findViewById(R.id.beatOver2);
-        beatOverViews[2] = findViewById(R.id.beatOver3);
-        beatOverViews[3] = findViewById(R.id.beatOver4);
+        //beatOverViews[0] = findViewById(R.id.beatOver1);
+        //beatOverViews[1] = findViewById(R.id.beatOver2);
+        //beatOverViews[2] = findViewById(R.id.beatOver3);
+        //beatOverViews[3] = findViewById(R.id.beatOver4);
 
         soundPool = new SoundPool.Builder()
                 .setMaxStreams(3)
@@ -106,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         bpmSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 bpm = Math.max(30, progress);
-                bpmText.setText("BPM: " + bpm);
+                bpmText.setText(R.string.bpm_label + bpm);
             }
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
@@ -127,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateBeatOverCircles(int index) {
         for (int i = 0; i < 4; i++) {
-            beatOverViews[i].setBackgroundResource(i == index ? R.drawable.circle_green : R.drawable.circle_gray);
+            //beatOverViews[i].setBackgroundResource(i == index ? R.drawable.circle_green : R.drawable.circle_gray);
         }
     }
 
@@ -143,7 +148,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_about) {
+        if (item.getItemId() == R.id.menu_switch_order) {
+            isOrderSwitched = !isOrderSwitched;
+            return true;
+        } else if (item.getItemId() == R.id.menu_about) {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.about_program)
                     .setMessage(R.string.about_text)
@@ -161,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
         outState.putInt("beatIndex", beatIndex);
         outState.putInt("beatOverIndex", beatOverIndex);
         outState.putBoolean("isRunning", isRunning);
+        outState.putBoolean("isOrderSwitched", isOrderSwitched);
     }
 
     @Override
@@ -171,9 +180,10 @@ public class MainActivity extends AppCompatActivity {
         beatIndex = savedInstanceState.getInt("beatIndex", 0);
         beatOverIndex = savedInstanceState.getInt("beatOverIndex", 0);
         isRunning = savedInstanceState.getBoolean("isRunning", false);
+        isOrderSwitched = savedInstanceState.getBoolean("isOrderSwitched", false);
 
         bpmSeekBar.setProgress(bpm);
-        bpmText.setText("BPM: " + bpm);
+        bpmText.setText(R.string.bpm_label + bpm);
 
         circleMatrixView.setRunning(isRunning);
         circleMatrixView.nextBeat(beatIndex);

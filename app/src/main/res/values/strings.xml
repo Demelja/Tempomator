@@ -3,4 +3,6 @@
     <string name="button_start_stop">Tap here to start/stop</string>
     <string name="about_program">About Program</string>
     <string name="about_text">Metronome App\nCreated with ❤️ using Java and Android Studio.\nGreetings and opinion are welcomed 📧 deemmel@gmail.com</string>
+    <string name="bpm_label">"BPM: "</string>
+    <string name="switch_order">Switch order</string>
 </resources>
