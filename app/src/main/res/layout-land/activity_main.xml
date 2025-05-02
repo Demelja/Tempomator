@@ -6,7 +6,7 @@
     android:orientation="horizontal"
     android:background="#FFFFFF">
 
-    <!-- Ліва зона: велика прозора кнопка -->
+    <!-- TOP area -->
     <FrameLayout
         android:id="@+id/topTouchArea"
         android:layout_width="0dp"
@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!-- Прозора кнопка над колами -->
+        <!-- button over main rings -->
         <Button
             android:id="@+id/startStopButton"
             android:layout_width="match_parent"
@@ -30,7 +30,7 @@
             android:textColor="@color/design_default_color_primary_dark" />
     </FrameLayout>
 
-    <!-- Середня зона: 4 маленькі вертикальні кола -->
+    <!-- MIDDLE area -->
     <LinearLayout
         android:id="@+id/beatLine"
         android:layout_width="0dp"
@@ -44,43 +44,9 @@
             android:id="@+id/circleBeatView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
-        <!--
-        <View
-            android:id="@+id/beatOver1"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/circle_gray" />
-
-        <View
-            android:id="@+id/beatOver2"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/circle_gray" />
-
-        <View
-            android:id="@+id/beatOver3"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/circle_gray" />
-
-        <View
-            android:id="@+id/beatOver4"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/circle_gray" />
-        -->
     </LinearLayout>
 
-    <!-- Права зона: BPM + повзунок -->
+    <!-- BOTTOM area: BPM + seeker -->
     <LinearLayout
         android:id="@+id/bpmControl"
         android:layout_width="0dp"
