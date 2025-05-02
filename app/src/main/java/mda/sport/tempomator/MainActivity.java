@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private int beatIndex = 0;
     private int beatOverIndex = 0;
     private boolean isRunning = false;
-    private boolean isOrderSwitched = false;
+    private boolean isOrderSwitched = true;
 
     private SoundPool soundPool;
     private int sound1, sound2, sound3;
@@ -48,10 +48,10 @@ public class MainActivity extends AppCompatActivity {
 
             if (isOrderSwitched) {
                 circleMatrixView.nextBeat(beatIndex);
-                updateBeatOverCircles(beatOverIndex);
+                circleBeatView.setActiveIndex(beatOverIndex);
             } else {
                 circleMatrixView.nextBeat(beatOverIndex);
-                updateBeatOverCircles(beatIndex);
+                circleBeatView.setActiveIndex(beatIndex);
             }
 
             new Thread(() -> {
@@ -91,11 +91,6 @@ public class MainActivity extends AppCompatActivity {
         bpmSeekBar = findViewById(R.id.bpmSeekBar);
         startStopButton = findViewById(R.id.startStopButton);
 
-        //beatOverViews[0] = findViewById(R.id.beatOver1);
-        //beatOverViews[1] = findViewById(R.id.beatOver2);
-        //beatOverViews[2] = findViewById(R.id.beatOver3);
-        //beatOverViews[3] = findViewById(R.id.beatOver4);
-
         soundPool = new SoundPool.Builder()
                 .setMaxStreams(3)
                 .setAudioAttributes(new AudioAttributes.Builder()
@@ -127,12 +122,6 @@ public class MainActivity extends AppCompatActivity {
             handler.post(beatRunnable);
         } else {
             handler.removeCallbacks(beatRunnable);
-        }
-    }
-
-    private void updateBeatOverCircles(int index) {
-        for (int i = 0; i < 4; i++) {
-            //beatOverViews[i].setBackgroundResource(i == index ? R.drawable.circle_green : R.drawable.circle_gray);
         }
     }
 
@@ -183,11 +172,12 @@ public class MainActivity extends AppCompatActivity {
         isOrderSwitched = savedInstanceState.getBoolean("isOrderSwitched", false);
 
         bpmSeekBar.setProgress(bpm);
-        bpmText.setText(R.string.bpm_label + bpm);
+        //bpmText.setText(R.string.bpm_label + bpm);
+        bpmText.setText("BPM: " + bpm);
 
         circleMatrixView.setRunning(isRunning);
         circleMatrixView.nextBeat(beatIndex);
-        updateBeatOverCircles(beatOverIndex);
+        circleBeatView.setActiveIndex(beatOverIndex);
 
         if (isRunning) {
             handler.postDelayed(beatRunnable, 0);
