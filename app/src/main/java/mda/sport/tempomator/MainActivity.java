@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView bpmText;
     private SeekBar bpmSeekBar;
     private Button startStopButton;
-    private View[] beatOverViews = new View[4];
+
 
     private Handler handler = new Handler();
     private int bpm = 120;
@@ -179,8 +179,8 @@ public class MainActivity extends AppCompatActivity {
         isOrderSwitched = savedInstanceState.getBoolean("isOrderSwitched", false);
 
         bpmSeekBar.setProgress(bpm);
-        //bpmText.setText(R.string.bpm_label + bpm);
-        bpmText.setText("BPM: " + bpm);
+        String bpmTextValue = getString(R.string.bpm_label) + " " + String.valueOf(bpm);
+        bpmText.setText(bpmTextValue);
 
         circleMatrixView.setRunning(isRunning);
         circleMatrixView.nextBeat(beatIndex);
