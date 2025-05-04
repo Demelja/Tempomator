@@ -11,7 +11,7 @@ import android.os.Handler;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Button;
-import android.view.View;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
