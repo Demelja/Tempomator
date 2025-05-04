@@ -6,8 +6,9 @@
     <string name="bpm_label">"BPM: "</string>
     <string name="switch_order">Switch order</string>
     <string name="help">Help</string>
-    <string name="help_text">The App visualizes the 4-by-4 rhythm to perform rhythmic movements.
-                            Just tap on the screen and start exercising!\n\n
-                            Use the slider to speed up or slow down the tempo.\n\n
-                            The "Switch" menu point will allow to switch the fast tempo to the main or additional line of the image.</string>
+    <string name="help_text">
+        The App visualizes the 4-by-4 rhythm to perform rhythmic movements.
+        Just tap on the screen and start exercising!\n\n
+        Use the slider to speed up or slow down the tempo.\n\n
+        The "Switch" menu point will allow to switch the fast tempo to the main or additional line of the image.</string>
 </resources>

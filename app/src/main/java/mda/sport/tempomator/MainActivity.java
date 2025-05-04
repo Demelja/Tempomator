@@ -106,7 +106,8 @@ public class MainActivity extends AppCompatActivity {
         bpmSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 bpm = Math.max(30, progress);
-                bpmText.setText(R.string.bpm_label + bpm);
+                String bpmTextValue = getString(R.string.bpm_label) + " " + String.valueOf(bpm);
+                bpmText.setText(bpmTextValue);
             }
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
