@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_switch_order" android:title="@string/switch_order"/>
+    <item android:id="@+id/menu_help" android:title="@string/help"/>
     <item android:id="@+id/menu_about" android:title="@string/about_program"/>
 </menu>

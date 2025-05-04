@@ -11,11 +11,19 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.core.content.ContextCompat;
+
 public class CircleBeatView extends View {
     private int activeIndex = -1;
     private final Paint paintCircle = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint paintFill = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint paintShape = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final int[] baseColors = {
+            ContextCompat.getColor(getContext(), R.color.basecolor1),
+            ContextCompat.getColor(getContext(), R.color.basecolor2),
+            ContextCompat.getColor(getContext(), R.color.basecolor3),
+            ContextCompat.getColor(getContext(), R.color.basecolor4)
+    };
 
     public CircleBeatView(Context context) {
         super(context);
@@ -32,7 +40,7 @@ public class CircleBeatView extends View {
         paintCircle.setStyle(Paint.Style.STROKE);
         paintCircle.setStrokeWidth(5);
 
-        paintFill.setColor(Color.parseColor("#CCFFCC")); // light-green
+        paintFill.setColor(Color.TRANSPARENT); //Color.parseColor("#CCFFCC")); // light-green
         paintFill.setStyle(Paint.Style.FILL);
 
         paintShape.setColor(Color.WHITE);
@@ -64,6 +72,7 @@ public class CircleBeatView extends View {
             float cy = isPortrait ? h / 2 : h - (spacing + radius + i * (diameter + spacing));
 
             if (i == activeIndex) {
+                paintFill.setColor(baseColors[i]);
                 canvas.drawCircle(cx, cy, radius, paintFill);
                 drawShape(canvas, i, cx, cy, radius);
             } else if (i < activeIndex) {

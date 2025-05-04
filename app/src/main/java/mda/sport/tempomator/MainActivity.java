@@ -140,6 +140,12 @@ public class MainActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.menu_switch_order) {
             isOrderSwitched = !isOrderSwitched;
             return true;
+        } else if (item.getItemId() == R.id.menu_help) {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.help_text)
+                    .setPositiveButton("OK", null)
+                    .show();
+            return true;
         } else if (item.getItemId() == R.id.menu_about) {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.about_program)

@@ -2,4 +2,14 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="basecolor1">#A621ED</color>
+    <color name="basecolor2">#EBC621</color>
+    <color name="basecolor3">#68EB21</color>
+    <color name="basecolor4">#EB2168</color>
+
+    <color name="flashcolor1">#FFAAAAFF</color>
+    <color name="flashcolor2">#FFFFFFAA</color>
+    <color name="flashcolor3">#FFAAFFAA</color>
+    <color name="flashcolor4">#FFFFAAAA</color>
 </resources>

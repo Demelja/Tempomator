@@ -9,21 +9,27 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
-import android.content.res.Configuration;
+
+import androidx.core.content.ContextCompat;
+
 
 public class CircleMatrixView extends View {
 
     private static final int CIRCLE_COUNT = 4;
 
     private final Paint[] fillPaints = new Paint[CIRCLE_COUNT];
-    //private final int[] baseColors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW};
     private final int[] baseColors = {
-            Color.parseColor("#FF1E00"),
-            Color.parseColor("#FF7F00"),
-            Color.parseColor("#D50065"),
-            Color.parseColor("#00BF32")
+            ContextCompat.getColor(getContext(), R.color.basecolor1),
+            ContextCompat.getColor(getContext(), R.color.basecolor2),
+            ContextCompat.getColor(getContext(), R.color.basecolor3),
+            ContextCompat.getColor(getContext(), R.color.basecolor4)
     };
-    private final int[] flashColors = {0xFFFFAAAA, 0xFFAAFFAA, 0xFFAAAAFF, 0xFFFFFFAA};
+    private final int[] flashColors = {
+            ContextCompat.getColor(getContext(), R.color.flashcolor1),
+            ContextCompat.getColor(getContext(), R.color.flashcolor2),
+            ContextCompat.getColor(getContext(), R.color.flashcolor3),
+            ContextCompat.getColor(getContext(), R.color.flashcolor4)
+    };
     private final boolean[] shouldFill = new boolean[CIRCLE_COUNT];
     private final boolean[] isFlashing = new boolean[CIRCLE_COUNT];
 
@@ -72,7 +78,7 @@ public class CircleMatrixView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // Малюємо від зовнішнього до внутрішнього
+        // paint from outer to inner
         for (int i = CIRCLE_COUNT - 1; i >= 0; i--) {
             if (shouldFill[i]) {
                 float radius = baseRadii[i];
@@ -86,7 +92,7 @@ public class CircleMatrixView extends View {
             }
         }
 
-        // Малюємо контури всіх кіл
+        // countours
         Paint strokePaint = new Paint();
         strokePaint.setStyle(Paint.Style.STROKE);
         strokePaint.setStrokeWidth(5);
